@@ -1,0 +1,60 @@
+<!--
+        （1）status="error" log4j2自身设置级别定义在error以上(包括error)控制台启动注意白色字体
+        （2）<property name="LOG_HOME">${web:rootDir}/WEB-INF/logs/</property>
+            <Property name="FILE_NAME">twitterlogs</Property>
+            自己定义，以便后续直接进行引入,其中${web:rootDir}引入系统的webAppRootKey对应的值,
+            实则便是部署项目的根路径
+         (3)monitorInterval表示每隔300秒重新读取配置信息,不需要重启服务
+-->
+<configuration status="debug" monitorInterval="300">
+    <Properties>
+        <property name="LOG_HOME">d:</property>
+        <Property name="FILE_NAME">mylog</Property>
+    </Properties>
+    <!--先定义所有的appender-->
+    <appenders>
+        <!--这个输出控制台的配置-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--控制台只输出debug及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY" />
+            <!--这个都知道是输出日志的格式-->
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} +%m+ %n" />
+        </Console>
+
+        <!--这个会打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的
+        文件夹下面并进行压缩，作为存档-->
+        <RollingFile name="RollingFile" fileName="${LOG_HOME}/${FILE_NAME}.log"
+                     filePattern="${LOG_HOME}$${date:yyyy-MM}/app-%d{yyyyMMddHHmmssSSS}.log.gz">
+            <PatternLayout pattern="%d{yyyy.MM.dd 'at' HH:mm:ss.SSS} %-5p %c{36} %L %M [-* %m *-] %n" />
+            <!-- 日志文件大小 -->
+            <SizeBasedTriggeringPolicy size="20MB" />
+            <!-- 最多保留文件数 -->
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </appenders>
+
+    <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
+    <loggers>
+        <!--
+            个别设置日志
+            1:当logger内部有<AppenderRef ref="RollingFile" />的时候
+            2:additivity=false的时候，在文件中有输出,文件的级别输出以level="debug"为主
+            3:additivity=true的时候，控制台和文件都有输出，控制台以root内引入的控制台的级别为主
+        -->
+
+        <logger name="com.senchen365.ssmempms.web.controller" level="debug" additivity="true">
+            <AppenderRef ref="RollingFile" />
+        </logger>
+        <!--建立一个默认的root的logger-->
+        <!--
+            全局设置日志
+            1.Root没有设置级别的时候，以configuration的status的级别为主,设置则以Root的level为主
+            2.如果引用的源头的级别高,那么源头还是以高的为主
+            3.冲突的原则是以高的为主(适用所有设置)
+        -->
+        <Root level="debug">
+            <!--如果引入Console是info级别的，那么以console的级别为主-->
+            <AppenderRef ref="Console" />
+        </Root>
+    </loggers>
+</configuration>

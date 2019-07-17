@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="sprimgMVC_fastjson_empms_prj:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="springmvc6-fastjson-prj-1.0.0.war">
+      <element id="artifact" artifact-name="sprimgMVC_fastjson_empms_prj:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.senchen365.ssmempms.dao.EmpMapper">
+    <!--1.得到所有的员工带部门-->
+    <resultMap id="queryAllEmpsResultMap" type="empentity">
+        <!--先配置员工-->
+        <id column="empno" property="empno"/>
+        <result column="ename" property="ename"/>
+        <result column="job" property="job"/>
+        <result column="mgr" property="mgr"/>
+        <result column="hiredate" property="hiredate"/>
+        <result column="sal" property="sal"/>
+        <result column="comm" property="comm"/>
+        <!--在配置部门实体-->
+        <association property="deptEntity" javaType="deptentity">
+            <id column="deptno" property="deptno"/>
+            <result column="dname" property="dname"/>
+            <result column="loc" property="loc"/>
+        </association>
+    </resultMap>
+    <!--1.得到所有的员工-->
+    <select id="queryAllEmps" resultMap="queryAllEmpsResultMap">
+        select * from base_depts d inner join base_emps e on e.dno=d.deptno ORDER BY e.empno
+    </select>
+    <insert id="addEmp" parameterType="com.senchen365.ssmempms.entity.EmpEntity"  >
+        INSERT  into base_emps values(#{empno},#{ename},#{job},#{mgr},#{hiredate},#{sal},#{comm},#{dno})
+    </insert>
+    <select id="checkNo" parameterType="Integer" resultType="Integer">
+        select COUNT(1) from base_emps where empno=#{no}
+    </select>
+    <delete id="delete" parameterType="Integer" >
+        DELETE from base_emps where empno=#{id}
+    </delete>
+    <select id="queryByID" resultType="com.senchen365.ssmempms.entity.EmpEntity" parameterType="Integer">
+        select * from base_emps where empno=#{id}
+    </select>
+    <update id="modify" parameterType="com.senchen365.ssmempms.entity.EmpEntity" >
+       UPDATE base_emps  SET ename=#{ename},job=#{job},mgr=#{mgr},hiredate=#{hiredate},sal=#{sal},comm=#{comm},dno=#{dno} WHERE  empno=#{empno}
+    </update>
+</mapper>
